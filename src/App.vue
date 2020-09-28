@@ -1,27 +1,33 @@
-<template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
-</template>
-
 <script lang="ts">
-import { defineComponent } from 'vue';
-import HelloWorld from './components/HelloWorld.vue';
+import { defineComponent, reactive, Ref, ref } from 'vue'
+import { useApi } from '@/services/useApi'
 
 export default defineComponent({
   name: 'App',
-  components: {
-    HelloWorld
-  }
-});
+  components: {},
+
+  setup() {
+    const users: Ref<any[]> = ref([])
+
+    return {
+      users,
+      async getUsers() {
+        users.value = await useApi((api) => api.admin.getAllUsers())
+      },
+    }
+  },
+})
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+<template>
+  <div>
+    <button @click="getUsers">Load Users</button>
+    <ul>
+      <li v-for="user in users" :key="user.email">
+        {{ user.email }}
+      </li>
+    </ul>
+  </div>
+</template>
+
+<style></style>
